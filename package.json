@@ -1,0 +1,42 @@
+{
+  "name": "neurosense360",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "NeuroSense360 - EEG Report Management Platform",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@stripe/stripe-js": "^7.8.0",
+    "@tanstack/react-table": "^8.21.3",
+    "axios": "^1.6.2",
+    "date-fns": "^4.1.0",
+    "js-cookie": "^3.0.5",
+    "lucide-react": "^0.294.0",
+    "prop-types": "^15.8.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-hook-form": "^7.48.2",
+    "react-hot-toast": "^2.4.1",
+    "react-router-dom": "^6.20.1",
+    "react-table": "^7.8.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.37",
+    "@types/react-dom": "^18.2.15",
+    "@vitejs/plugin-react": "^4.1.1",
+    "autoprefixer": "^10.4.16",
+    "eslint": "^8.53.0",
+    "eslint-plugin-react": "^7.33.2",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.4",
+    "postcss": "^8.4.32",
+    "tailwindcss": "^3.3.6",
+    "vite": "^4.5.0"
+  }
+}
