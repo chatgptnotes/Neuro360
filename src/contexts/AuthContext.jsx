@@ -91,9 +91,10 @@ export const AuthProvider = ({ children }) => {
         Cookies.set('authToken', response.token, { expires: 7 }); // 7 days
         setUser(response.user);
         setIsAuthenticated(true);
-        toast.success('Login successful!');
+        localStorage.setItem('user', JSON.stringify(response.user));
+        toast.success('Logged in successfully');
         console.log('✅ AuthContext: Login completed successfully');
-        return { success: true };
+        return { success: true, user: response.user };
       } else {
         console.log('❌ AuthContext: Invalid response format:', response);
         throw new Error('Authentication failed');
@@ -149,15 +150,22 @@ export const AuthProvider = ({ children }) => {
     try {
       await authService.logout();
       Cookies.remove('authToken');
+      localStorage.removeItem('demoUser');
+      localStorage.removeItem('demoToken');
       setUser(null);
       setIsAuthenticated(false);
       toast.success('Logged out successfully');
+      // Redirect to login page after logout
+      window.location.href = '/login';
     } catch (error) {
       console.error('Logout failed:', error);
       // Still clear local state even if API call fails
       Cookies.remove('authToken');
+      localStorage.removeItem('demoUser');
+      localStorage.removeItem('demoToken');
       setUser(null);
       setIsAuthenticated(false);
+      window.location.href = '/login';
     }
   };
 

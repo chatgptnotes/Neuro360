@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, Loader2 } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import SocialAuthButtons from './SocialAuthButtons';
@@ -9,6 +9,7 @@ const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
   const { login, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   
   const {
     register,
@@ -25,8 +26,26 @@ const LoginForm = () => {
       console.log('🎯 LoginForm: Login result:', result);
       
       if (result && result.success) {
-        console.log('✅ LoginForm: Login successful, navigating to dashboard');
-        navigate('/dashboard');
+        console.log('✅ LoginForm: Login successful, navigating based on user role');
+        
+        // Determine redirect path based on user role
+        let redirectPath = '/login'; // Default to login
+        if (result.user) {
+          switch (result.user.role) {
+            case 'super_admin':
+              redirectPath = '/admin';
+              break;
+            case 'clinic_admin':
+              redirectPath = '/clinic';
+              break;
+            default:
+              redirectPath = '/login'; // Fallback to login
+          }
+        }
+        
+        // Use intended path if available, otherwise use role-based path
+        const from = location.state?.from?.pathname || redirectPath;
+        navigate(from, { replace: true });
       } else {
         console.log('❌ LoginForm: Login failed:', result?.error);
         setError('root', { 

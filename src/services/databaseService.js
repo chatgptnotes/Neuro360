@@ -34,6 +34,24 @@ class DatabaseService {
           localStorage.setItem(table, JSON.stringify([]));
         }
       });
+
+      // Add a demo clinic if it doesn't exist
+      const clinics = this.get('clinics');
+      if (!clinics.find(c => c.id === 'demo-clinic-id')) {
+        this.add('clinics', {
+          id: 'demo-clinic-id',
+          name: 'Demo Clinic',
+          email: 'clinic@demo.com',
+          password: 'password',
+          role: 'clinic_admin',
+          isActive: true,
+          reportsUsed: 5,
+          reportsAllowed: 10,
+          subscriptionStatus: 'trial',
+          trialStartDate: new Date().toISOString(),
+          trialEndDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+        });
+      }
     } catch (error) {
       console.warn('Failed to initialize data tables:', error);
     }

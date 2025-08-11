@@ -7,8 +7,10 @@ import {
   AlertTriangle,
   Star,
   Receipt,
-  Download
+  Download,
+  ArrowLeft
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
 import PaymentService from '../../services/paymentService';
 import DatabaseService from '../../services/databaseService';
@@ -80,6 +82,8 @@ const SubscriptionManager = ({ clinicId }) => {
   //   return 'bg-green-500';
   // };
 
+  const navigate = useNavigate();
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -90,6 +94,16 @@ const SubscriptionManager = ({ clinicId }) => {
 
   return (
     <div className="space-y-8">
+      <div className="mb-4">
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+        >
+          <ArrowLeft className="mr-2 h-5 w-5" />
+          Back to Dashboard
+        </button>
+      </div>
+
       {/* Current Usage Section */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
         <h2 className="text-2xl font-bold text-gray-900 mb-6">Current Usage</h2>

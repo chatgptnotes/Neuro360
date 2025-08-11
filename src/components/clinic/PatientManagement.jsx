@@ -12,11 +12,13 @@ import {
   FileText,
   Phone,
   Mail,
-  MapPin
+  MapPin,
+  Upload
 } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import toast from 'react-hot-toast';
 import DatabaseService from '../../services/databaseService';
+import UploadReportModal from './UploadReportModal';
 
 const PatientManagement = ({ clinicId, onUpdate }) => {
   const [patients, setPatients] = useState([]);
@@ -26,6 +28,8 @@ const PatientManagement = ({ clinicId, onUpdate }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [genderFilter, setGenderFilter] = useState('');
   const [loading, setLoading] = useState(true);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+  const [patientForUpload, setPatientForUpload] = useState(null);
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm();
 
@@ -117,6 +121,16 @@ const PatientManagement = ({ clinicId, onUpdate }) => {
     reset({});
   };
 
+  const openUploadModal = (patient) => {
+    setPatientForUpload(patient);
+    setShowUploadModal(true);
+  };
+
+  const closeUploadModal = () => {
+    setPatientForUpload(null);
+    setShowUploadModal(false);
+  };
+
   const viewPatientDetails = (patient) => {
     setSelectedPatient(patient);
     setViewMode('details');
@@ -146,6 +160,8 @@ const PatientManagement = ({ clinicId, onUpdate }) => {
       onBack={() => {setViewMode('list'); setSelectedPatient(null);}} 
     />;
   }
+
+  console.log('Filtered Patients:', filteredPatients);
 
   return (
     <div className="space-y-6">
@@ -224,7 +240,10 @@ const PatientManagement = ({ clinicId, onUpdate }) => {
                   Demographics
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Reports
+                  EEG Report
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  PDF File
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Added
@@ -237,6 +256,8 @@ const PatientManagement = ({ clinicId, onUpdate }) => {
             <tbody className="bg-white divide-y divide-gray-200">
               {filteredPatients.map((patient) => {
                 const patientReports = DatabaseService.getReportsByPatient(patient.id);
+                const eegReport = patientReports.find(r => r.fileType && r.fileType.includes('eeg'));
+                const pdfReport = patientReports.find(r => r.fileType && r.fileType.includes('pdf'));
                 
                 return (
                   <tr key={patient.id} className="hover:bg-gray-50">
@@ -260,10 +281,18 @@ const PatientManagement = ({ clinicId, onUpdate }) => {
                       <div className="text-sm text-gray-500">{patient.gender}</div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="flex items-center">
-                        <FileText className="h-4 w-4 text-gray-400 mr-2" />
-                        <span className="text-sm text-gray-900">{patientReports.length}</span>
-                      </div>
+                      {eegReport ? (
+                        <a href="#" className="text-sm text-primary-600 hover:underline">{eegReport.fileName}</a>
+                      ) : (
+                        <span className="text-sm text-gray-500">N/A</span>
+                      )}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      {pdfReport ? (
+                        <a href="#" className="text-sm text-primary-600 hover:underline">{pdfReport.fileName}</a>
+                      ) : (
+                        <span className="text-sm text-gray-500">N/A</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(patient.createdAt).toLocaleDateString()}
@@ -271,20 +300,30 @@ const PatientManagement = ({ clinicId, onUpdate }) => {
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <div className="flex items-center justify-end space-x-2">
                         <button
+                          onClick={() => openUploadModal(patient)}
+                          className="text-blue-600 hover:text-blue-900"
+                          title="Upload Report"
+                        >
+                          <Upload className="h-4 w-4" />
+                        </button>
+                        <button
                           onClick={() => viewPatientDetails(patient)}
                           className="text-primary-600 hover:text-primary-900"
+                          title="View Details"
                         >
                           <Eye className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => openModal(patient)}
                           className="text-gray-600 hover:text-gray-900"
+                          title="Edit Patient"
                         >
                           <Edit className="h-4 w-4" />
                         </button>
                         <button
                           onClick={() => handleDeletePatient(patient.id)}
                           className="text-red-600 hover:text-red-900"
+                          title="Delete Patient"
                         >
                           <Trash2 className="h-4 w-4" />
                         </button>
@@ -325,6 +364,20 @@ const PatientManagement = ({ clinicId, onUpdate }) => {
           register={register}
           handleSubmit={handleSubmit}
           errors={errors}
+        />
+      )}
+
+      {/* Upload Report Modal */}
+      {showUploadModal && (
+        <UploadReportModal
+          clinicId={clinicId}
+          patient={patientForUpload}
+          onUpload={() => {
+            loadPatients();
+            closeUploadModal();
+            onUpdate?.();
+          }}
+          onClose={closeUploadModal}
         />
       )}
     </div>

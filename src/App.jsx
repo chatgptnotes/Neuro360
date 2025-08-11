@@ -7,7 +7,7 @@ import LoginForm from './components/auth/LoginForm';
 import RegisterForm from './components/auth/RegisterForm';
 import ForgotPasswordForm from './components/auth/ForgotPasswordForm';
 import ResetPasswordForm from './components/auth/ResetPasswordForm';
-import Dashboard from './components/Dashboard';
+
 import SuperAdminPanel from './components/admin/SuperAdminPanel';
 import ClinicDashboard from './components/clinic/ClinicDashboard';
 import SubscriptionManager from './components/clinic/SubscriptionManager';
@@ -27,20 +27,12 @@ function App() {
             <Route path="/reset-password" element={<ResetPasswordForm />} />
             
             {/* Protected Routes */}
-            <Route 
-              path="/dashboard" 
-              element={
-                <ProtectedRoute>
-                  <Dashboard />
-                </ProtectedRoute>
-              } 
-            />
             
             {/* Super Admin Routes */}
             <Route 
               path="/admin" 
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRole="super_admin">
                   <SuperAdminPanel />
                 </ProtectedRoute>
               } 
@@ -50,7 +42,7 @@ function App() {
             <Route 
               path="/clinic" 
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRole="clinic_admin">
                   <ClinicDashboard />
                 </ProtectedRoute>
               } 
@@ -59,14 +51,14 @@ function App() {
             <Route 
               path="/clinic/subscription" 
               element={
-                <ProtectedRoute>
+                <ProtectedRoute requiredRole="clinic_admin">
                   <SubscriptionManager clinicId="demo-clinic-id" />
                 </ProtectedRoute>
               } 
             />
             
-            {/* Default redirect to dashboard */}
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            {/* Default redirect to login */}
+            <Route path="/" element={<Navigate to="/login" replace />} />
             
             {/* Catch all route - redirect to login */}
             <Route path="*" element={<Navigate to="/login" replace />} />
